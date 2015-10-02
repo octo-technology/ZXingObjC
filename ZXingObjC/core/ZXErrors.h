@@ -16,7 +16,7 @@
 
 #define ZXErrorDomain @"ZXErrorDomain"
 
-enum {
+typedef NS_ENUM(NSInteger, ZXErrorCode) {
   /**
    * Thrown when a barcode was successfully detected and decoded, but
    * was not returned because its checksum feature failed.
@@ -59,3 +59,4 @@ enum {
 NSError *ZXChecksumErrorInstance(void);
 NSError *ZXFormatErrorInstance(void);
 NSError *ZXNotFoundErrorInstance(void);
+NSError *ZXError(NSInteger code, NSString* message);

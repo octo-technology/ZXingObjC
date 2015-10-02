@@ -17,6 +17,7 @@
 #import "ZXBoolArray.h"
 #import "ZXITFReader.h"
 #import "ZXITFWriter.h"
+#import "ZXErrors.h"
 
 const int ZX_ITF_WRITER_START_PATTERN[] = {1, 1, 1, 1};
 const int ZX_ITF_WRITER_END_PATTERN[] = {3, 1, 1};
@@ -31,13 +32,15 @@ const int ZX_ITF_WRITER_END_PATTERN[] = {3, 1, 1};
   return [super encode:contents format:format width:width height:height hints:hints error:error];
 }
 
-- (ZXBoolArray *)encode:(NSString *)contents {
+- (ZXBoolArray *)encode:(NSString *)contents error:(NSError **)error {
   int length = (int)[contents length];
   if (length % 2 != 0) {
-    [NSException raise:NSInvalidArgumentException format:@"The length of the input should be even"];
+    *error = ZXError(ZXWriterError, @"The length of the input should be even");
+    return nil;
   }
   if (length > 80) {
-    [NSException raise:NSInvalidArgumentException format:@"Requested contents should be less than 80 digits long, but got %d", length];
+    *error = ZXError(ZXWriterError, [NSString stringWithFormat:@"Requested contents should be less than 80 digits long, but got %d", length]);
+    return nil;
   }
 
   ZXBoolArray *result = [[ZXBoolArray alloc] initWithLength:9 + 9 * length];

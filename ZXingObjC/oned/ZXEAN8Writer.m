@@ -18,6 +18,7 @@
 #import "ZXBoolArray.h"
 #import "ZXEAN8Writer.h"
 #import "ZXUPCEANReader.h"
+#import "ZXErrors.h"
 
 const int ZX_EAN8_CODE_WIDTH = 3 + (7 * 4) + 5 + (7 * 4) + 3;
 
@@ -33,9 +34,10 @@ const int ZX_EAN8_CODE_WIDTH = 3 + (7 * 4) + 5 + (7 * 4) + 3;
 /**
  * Returns a byte array of horizontal pixels (FALSE = white, TRUE = black)
  */
-- (ZXBoolArray *)encode:(NSString *)contents {
+- (ZXBoolArray *)encode:(NSString *)contents error:(NSError **)error {
   if ([contents length] != 8) {
-    [NSException raise:NSInvalidArgumentException format:@"Requested contents should be 8 digits long, but got %d", (int)[contents length]];
+    *error = ZXError(ZXWriterError, [NSString stringWithFormat:@"Requested contents should be 8 digits long, but got %d", (int)[contents length]]);
+    return nil;
   }
 
   ZXBoolArray *result = [[ZXBoolArray alloc] initWithLength:ZX_EAN8_CODE_WIDTH];

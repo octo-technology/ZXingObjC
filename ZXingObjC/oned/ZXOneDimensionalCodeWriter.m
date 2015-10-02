@@ -18,6 +18,7 @@
 #import "ZXBoolArray.h"
 #import "ZXEncodeHints.h"
 #import "ZXOneDimensionalCodeWriter.h"
+#import "ZXErrors.h"
 
 @implementation ZXOneDimensionalCodeWriter
 
@@ -39,9 +40,7 @@
   }
 
   if (width < 0 || height < 0) {
-    @throw [NSException exceptionWithName:NSInvalidArgumentException
-                                   reason:[NSString stringWithFormat:@"Negative size is not allowed. Input: %dx%d", width, height]
-                                 userInfo:nil];
+    *error = ZXError(ZXWriterError, [NSString stringWithFormat:@"Negative size is not allowed. Input: %dx%d", width, height]);
   }
 
   int sidesMargin = [self defaultMargin];
@@ -49,7 +48,7 @@
     sidesMargin = hints.margin.intValue;
   }
 
-  ZXBoolArray *code = [self encode:contents];
+  ZXBoolArray *code = [self encode:contents error:error];
   return [self renderResult:code width:width height:height sidesMargin:sidesMargin];
 }
 
@@ -106,7 +105,7 @@
  *
  * @return a ZXBoolArray of horizontal pixels (false = white, true = black)
  */
-- (ZXBoolArray *)encode:(NSString *)contents {
+- (ZXBoolArray *)encode:(NSString *)contents error:(NSError**)error {
   @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                  reason:[NSString stringWithFormat:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)]
                                userInfo:nil];

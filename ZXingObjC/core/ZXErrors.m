@@ -33,3 +33,9 @@ NSError *ZXNotFoundErrorInstance() {
 
   return [[NSError alloc] initWithDomain:ZXErrorDomain code:ZXNotFoundError userInfo:userInfo];
 }
+
+NSError *ZXError(NSInteger code, NSString* message) {
+  NSDictionary *userInfo = @{NSLocalizedDescriptionKey: message};
+  
+  return [[NSError alloc] initWithDomain:ZXErrorDomain code:code userInfo:userInfo];
+}

@@ -19,6 +19,7 @@
 #import "ZXEAN13Reader.h"
 #import "ZXEAN13Writer.h"
 #import "ZXUPCEANReader.h"
+#import "ZXErrors.h"
 
 const int ZX_EAN13_CODE_WIDTH = 3 + // start guard
   (7 * 6) + // left bars
@@ -30,23 +31,30 @@ const int ZX_EAN13_CODE_WIDTH = 3 + // start guard
 
 - (ZXBitMatrix *)encode:(NSString *)contents format:(ZXBarcodeFormat)format width:(int)width height:(int)height hints:(ZXEncodeHints *)hints error:(NSError **)error {
   if (format != kBarcodeFormatEan13) {
-    @throw [NSException exceptionWithName:NSInvalidArgumentException
-                                   reason:[NSString stringWithFormat:@"Can only encode EAN_13, but got %d", format]
-                                 userInfo:nil];
+    *error = ZXError(ZXWriterError, [NSString stringWithFormat:@"Can only encode EAN_13, but got %d", format]);
+    return nil;
+//
+//    @throw [NSException exceptionWithName:NSInvalidArgumentException
+//                                   reason:[NSString stringWithFormat:@"Can only encode EAN_13, but got %d", format]
+//                                 userInfo:nil];
   }
 
   return [super encode:contents format:format width:width height:height hints:hints error:error];
 }
 
-- (ZXBoolArray *)encode:(NSString *)contents {
+- (ZXBoolArray *)encode:(NSString *)contents error:(NSError **)error {
   if ([contents length] != 13) {
-    [NSException raise:NSInvalidArgumentException
-                format:@"Requested contents should be 13 digits long, but got %d", (int)[contents length]];
+    *error = ZXError(ZXWriterError, [NSString stringWithFormat:@"Requested contents should be 13 digits long, but got %d", (int)[contents length]]);
+    return nil;
+//    [NSException raise:NSInvalidArgumentException
+//                format:@"Requested contents should be 13 digits long, but got %d", (int)[contents length]];
   }
 
   if (![ZXUPCEANReader checkStandardUPCEANChecksum:contents]) {
-    [NSException raise:NSInvalidArgumentException
-                format:@"Contents do not pass checksum"];
+    *error = ZXError(ZXWriterError, [NSString stringWithFormat:@"Contents do not pass checksum"]);
+    return nil;
+//    [NSException raise:NSInvalidArgumentException
+//                format:@"Contents do not pass checksum"];
   }
 
   int firstDigit = [[contents substringToIndex:1] intValue];
