@@ -33,10 +33,6 @@ const int ZX_EAN13_CODE_WIDTH = 3 + // start guard
   if (format != kBarcodeFormatEan13) {
     *error = ZXError(ZXWriterError, [NSString stringWithFormat:@"Can only encode EAN_13, but got %d", format]);
     return nil;
-//
-//    @throw [NSException exceptionWithName:NSInvalidArgumentException
-//                                   reason:[NSString stringWithFormat:@"Can only encode EAN_13, but got %d", format]
-//                                 userInfo:nil];
   }
 
   return [super encode:contents format:format width:width height:height hints:hints error:error];
@@ -46,15 +42,11 @@ const int ZX_EAN13_CODE_WIDTH = 3 + // start guard
   if ([contents length] != 13) {
     *error = ZXError(ZXWriterError, [NSString stringWithFormat:@"Requested contents should be 13 digits long, but got %d", (int)[contents length]]);
     return nil;
-//    [NSException raise:NSInvalidArgumentException
-//                format:@"Requested contents should be 13 digits long, but got %d", (int)[contents length]];
   }
 
   if (![ZXUPCEANReader checkStandardUPCEANChecksum:contents]) {
     *error = ZXError(ZXWriterError, [NSString stringWithFormat:@"Contents do not pass checksum"]);
     return nil;
-//    [NSException raise:NSInvalidArgumentException
-//                format:@"Contents do not pass checksum"];
   }
 
   int firstDigit = [[contents substringToIndex:1] intValue];

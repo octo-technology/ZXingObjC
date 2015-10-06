@@ -49,7 +49,11 @@
   }
 
   ZXBoolArray *code = [self encode:contents error:error];
-  return [self renderResult:code width:width height:height sidesMargin:sidesMargin];
+  if (*error == nil) {
+    return [self renderResult:code width:width height:height sidesMargin:sidesMargin];
+  } else {
+    return nil;
+  }
 }
 
 /**
